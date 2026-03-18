@@ -191,9 +191,19 @@ const Edit = ({ inputs, title }) => {
     }
 
     if (processedFormData["amenities"]) {
-      processedFormData["amenities"] = processedFormData["amenities"]
-        .split(",")
-        .map((item) => item.trim()); // Chuyển đổi chuỗi thành mảng
+      if (Array.isArray(processedFormData["amenities"])) {
+        // đã là array → stringify luôn
+        processedFormData["amenities"] = JSON.stringify(
+          processedFormData["amenities"]
+        );
+      } else {
+        // là string → split
+        processedFormData["amenities"] = JSON.stringify(
+          processedFormData["amenities"]
+            .split(",")
+            .map((item) => item.trim())
+        );
+      }
     }
 
     const data = new FormData();

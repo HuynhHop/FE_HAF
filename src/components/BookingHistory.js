@@ -109,9 +109,20 @@ const BookingHistory = () => {
                 </span>
               </p>
               <p>
-                Ngày đặt:{" "}
-                <span className="booking-date">
-                  {new Date(order.createdAt).toLocaleDateString()}
+                Nhận phòng:{" "}
+                <span>
+                  {order.checkIn
+                    ? new Date(order.checkIn).toLocaleString()
+                    : "N/A"}
+                </span>
+              </p>
+
+              <p>
+                Trả phòng:{" "}
+                <span>
+                  {order.checkOut
+                    ? new Date(order.checkOut).toLocaleString()
+                    : "N/A"}
                 </span>
               </p>
               <p>

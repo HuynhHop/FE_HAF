@@ -36,6 +36,11 @@ const HotelCheckout = () => {
   const [note, setNote] = useState("");
   const [isBookingForOthers, setIsBookingForOthers] = useState(false);
 
+  const [checkIn, setCheckIn] = useState(new Date());
+  const [checkOut, setCheckOut] = useState(
+    new Date(Date.now() + 86400000)
+  );
+
   useEffect(() => {
     const fetchCashInfo = async () => {
       try {
@@ -81,6 +86,23 @@ const HotelCheckout = () => {
     fetchRoomAndHotel();
   }, [roomId, apiUrl]);
 
+  const formatDate = (date) => {
+    return new Date(date).toLocaleString("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      weekday: "short",
+      day: "2-digit",
+      month: "2-digit",
+    });
+  };
+
+  const nights = Math.max(
+    1,
+    Math.ceil(
+      (new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24)
+    )
+  );
+  
   const handleContactChange = (e) => {
     setContactInfo({ ...contactInfo, [e.target.name]: e.target.value });
   };
@@ -141,6 +163,8 @@ const HotelCheckout = () => {
               note: savedNote,
               imageRoom: savedImage,
               cashUsed: cashToUse, // Sử dụng cash nếu có
+              checkIn: localStorage.getItem("checkIn"),
+              checkOut: localStorage.getItem("checkOut"),
             }),
           });
           const data = await response.json();
@@ -213,6 +237,8 @@ const HotelCheckout = () => {
       localStorage.setItem("finalPrice", finalPrice.toString());
       localStorage.setItem("amountToPay", amountToPay.toString());
       localStorage.setItem("cashToUse", cashToUse.toString()); 
+      localStorage.setItem("checkIn", checkIn);
+      localStorage.setItem("checkOut", checkOut);
 
       const response = await fetch(`${apiUrl}/payment/create_payment_url`, {
         method: "POST",
@@ -271,7 +297,8 @@ const HotelCheckout = () => {
     return <p>Đang tải thông tin...</p>;
   }
 
-  const finalPrice = Number(localStorage.getItem("finalPrice") || room.price);
+  const basePrice = room.price;
+  const finalPrice = basePrice * nights + room.serviceFee;
 
   return (
   <div className="checkout-container">
@@ -290,36 +317,52 @@ const HotelCheckout = () => {
               <span>{hotel.address}</span>
             </div>
             
-            <div className="booking-dates">
+            {/* <div className="booking-dates">
               <div className="date-item">
                 <FaCalendarAlt className="date-icon" />
                 <div>
                   <div className="date-label">Nhận phòng</div>
-                  <div className="date-value">15:00, T6, 04 tháng 4</div>
+                  <div className="date-value">{formatDate(checkIn)}</div>
                 </div>
               </div>
               <div className="date-item">
                 <FaCalendarAlt className="date-icon" />
                 <div>
                   <div className="date-label">Trả phòng</div>
-                  <div className="date-value">11:00, T7, 05 tháng 4</div>
+                  <div className="date-value">{formatDate(checkOut)}</div>
                 </div>
               </div>
-            </div>
+            </div> */}
             
-            <div className="booking-summary">
-              <div className="summary-item">
-                <span className="summary-label">Số đêm:</span>
-                <span className="summary-value">01</span>
+            <div className="date-picker-container">
+              <div className="date-box">
+                <label>Nhận phòng</label>
+                <input
+                  type="date"
+                  value={new Date(checkIn).toISOString().split("T")[0]}
+                  onChange={(e) => setCheckIn(e.target.value)}
+                />
+                <span className="time-note">Từ 14:00</span>
               </div>
-              <div className="summary-item">
-                <span className="summary-label">Loại phòng:</span>
-                <span className="summary-value">1 x {room.name}</span>
+
+              <div className="date-box">
+                <label>Trả phòng</label>
+                <input
+                  type="date"
+                  value={new Date(checkOut).toISOString().split("T")[0]}
+                  onChange={(e) => setCheckOut(e.target.value)}
+                />
+                <span className="time-note">Trước 12:00</span>
               </div>
-              <div className="summary-item">
-                <span className="summary-label">Sức chứa:</span>
-                <span className="summary-value">{room.capacity} người lớn</span>
-              </div>
+            </div>
+            <div className="stay-summary">
+              <p>
+                🏨 {nights} đêm | {room.price.toLocaleString("vi-VN")}₫ / đêm
+              </p>
+              <p>
+                📅 {new Date(checkIn).toLocaleDateString("vi-VN")} →{" "}
+                {new Date(checkOut).toLocaleDateString("vi-VN")}
+              </p>
             </div>
           </div>
         </div>
@@ -432,6 +475,8 @@ const HotelCheckout = () => {
                   <p className="error-message">{errors.guestInfo.phone}</p>
                 )}
               </div>
+              <input type="date" onChange={(e) => setCheckIn(e.target.value)} />
+              <input type="date" onChange={(e) => setCheckOut(e.target.value)} />
             </div>
           </div>
         )}
@@ -528,16 +573,16 @@ const HotelCheckout = () => {
         <div className="price-breakdown">
           <h3 className="price-title">Chi tiết giá</h3>
           <div className="price-item">
-            <span>Giá gốc:</span>
+            <span>Giá tính theo số đêm:</span>
             <span className="original-price">
-              {Number(localStorage.getItem("price") || room.price).toLocaleString("vi-VN")}₫
+              {(room.price * nights).toLocaleString("vi-VN")}₫
             </span>
           </div>
           <div className="price-item">
-            <span>Giảm giá còn:</span>
+            {/* <span>Giảm giá còn:</span>
             <span className="discounted-price">
               {Number(localStorage.getItem("discountedPrice")).toLocaleString("vi-VN")}₫
-            </span>
+            </span> */}
           </div>
           {useCash && (
             <div className="price-item">

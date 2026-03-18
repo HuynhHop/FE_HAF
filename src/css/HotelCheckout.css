@@ -468,6 +468,52 @@ body {
   background-color: var(--primary-hover);
   transform: translateY(-2px);
 }
+/* Date Picker UI */
+.date-picker-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.date-box {
+  flex: 1;
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.date-box label {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  margin-bottom: 0.25rem;
+}
+
+.date-box input {
+  border: none;
+  background: transparent;
+  font-size: 0.9rem;
+  font-weight: 500;
+  outline: none;
+}
+
+.time-note {
+  font-size: 0.7rem;
+  color: var(--text-light);
+  margin-top: 0.25rem;
+}
+
+/* Stay summary */
+.stay-summary {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-color);
+  background: #f1f5f9;
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+}
 
 /* Responsive Design */
 @media (max-width: 1024px) {

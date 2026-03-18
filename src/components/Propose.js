@@ -212,7 +212,7 @@ const Propose = ({ hotelId }) => {
         {rooms.map((room) => (
           <div key={room._id} className="propose-content">
             <div className="propose-image">
-              <img src={room.images[0]} alt={room.name} />
+              <img src={room.images?.[0]} alt={room.name} />
               <button onClick={() => openModal(room._id)}>
                 Xem chi tiết phòng »
               </button>
@@ -312,7 +312,7 @@ const Propose = ({ hotelId }) => {
                   <FaInfoCircle className="tooltip-icon" />
                   <span className="tooltip-text">
                     Giá cuối cùng = Giá đã giảm + Phí dịch vụ<br />
-                    ({room.discountedPrice.toLocaleString()}₫ + {room.serviceFee.toLocaleString()}₫)
+                    ({room.discountedPrice?.toLocaleString() || '0'}₫ + {room.serviceFee?.toLocaleString() || '0'}₫)
                   </span>
                 </span>
               </p>
