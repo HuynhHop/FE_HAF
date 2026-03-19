@@ -99,7 +99,7 @@ const Edit = ({ inputs, title }) => {
           }
 
           if (resourceType === "room") {
-            fetchedData.hotelId = fetchedData.hotel._id;
+            fetchedData.hotel = fetchedData.hotel._id;
           }
 
           if (fetchedData.images) {
@@ -210,6 +210,8 @@ const Edit = ({ inputs, title }) => {
 
     // Add form data fields to FormData object
     Object.keys(processedFormData).forEach((key) => {
+      if (key === "images") return; // ❌ bỏ images ra
+
       data.append(key, processedFormData[key]);
     });
 
@@ -228,6 +230,7 @@ const Edit = ({ inputs, title }) => {
     if (existingImages.length > 0) {
       data.append("existingImages", JSON.stringify(existingImages));
     }
+    delete data.existingImages;
 
     try {
       const response = await fetch(`${apiUrl}/${resourceType}s/${resourceId}`, {
